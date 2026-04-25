@@ -1,0 +1,116 @@
+#include <iostream>
+// #include <graphics.h>
+#include <winbgim.h>
+#include <cstring>
+#include <stdio.h>
+
+using namespace std;
+struct nod
+{
+    int info;
+    nod *st, *dr;
+};
+
+int nrNiveluri(nod *a)
+{
+    if(a==NULL)return 0;
+    else
+    {
+        int n1=nrNiveluri(a->st);
+        int n2=nrNiveluri(a->dr);
+        return 1+max(n1,n2);
+    }
+}
+int nrColoane(nod *a)
+{
+    if(a==NULL)return 0;
+    else
+    {
+        int n1=nrColoane(a->st);
+        int n2=nrColoane(a->dr);
+        return 1+n1+n2;
+    }
+}
+
+void deseneazaNod(int elem, int xc, int yc, int latime, int inaltime)
+{
+    char arr[50];
+    sprintf(arr,"%d",elem);
+    setcolor(WHITE); setfillstyle(SOLID_FILL,LIGHTCYAN);
+    fillellipse(xc,yc,textwidth(arr)+2, textheight("M")/2+6);
+    settextstyle(SANS_SERIF_FONT,HORIZ_DIR,1);
+    setbkcolor(LIGHTCYAN);
+    setcolor(BLUE);
+    settextjustify(1,1);
+    outtextxy(xc,yc+4,arr);
+}
+
+void deseneazaArbore(nod *a, int niv, int stanga, int latime, int inaltime)
+{
+    if(a!=NULL)
+    {
+        int n1=nrColoane(a->st);
+        int xc=stanga+latime*n1+latime/2;
+        int yc=niv*inaltime-inaltime/2;
+
+        if (a->st!=NULL)
+        {
+            int xcs=stanga+latime*nrColoane(a->st->st)+latime/2;
+            setcolor(WHITE);
+            line(xc,yc,xcs,yc+inaltime);
+        }
+        if (a->dr!=NULL)
+        {
+            int xcd=stanga+latime*(n1+1)+latime*nrColoane(a->dr->st)+latime/2;
+            setcolor(WHITE);
+            line(xc,yc,xcd,yc+inaltime);
+        }
+        deseneazaNod(a->info,xc,yc,latime, inaltime);
+        deseneazaArbore(a->st,niv+1,stanga, latime, inaltime);
+        deseneazaArbore(a->dr,niv+1,stanga+latime*(n1+1), latime, inaltime);
+    }
+}
+void adaugaLaArboreElement(nod* &a, int el)
+{
+    if (a==NULL)
+    {
+        a=new nod;
+        a->info = el;
+        a->st = NULL;
+        a->dr = NULL;
+    }
+    else if (el < a->info)
+        adaugaLaArboreElement(a->st, el);
+    else
+        adaugaLaArboreElement(a->dr, el);
+}
+
+int main()
+{
+    nod *radacina;
+    radacina=NULL;
+    int nrelem,elem;
+    cout<<"Vom crea si vizualiza grafic un arbore binar de cautare\n";
+    cout<<"Dati numarul de elemente: ";
+    cin>>nrelem;
+    cout<<"Dati informatia din radacina arborelui: ";
+    cin>>elem;
+    adaugaLaArboreElement(radacina,elem);
+    for(int i=2; i<=nrelem; i++)
+    {
+        cout<<"Dati elementul nr. "<<i<<":";
+        cin>>elem;
+        adaugaLaArboreElement(radacina,elem);
+    }
+    int height=600, width=800;
+    initwindow(width,height);
+    setcolor(WHITE); setbkcolor(BLUE); cleardevice();
+    rectangle(1,1,width-1,height-1);
+    int latime, inaltime;
+    latime=width/nrColoane(radacina);
+    inaltime=height/nrNiveluri(radacina);
+    deseneazaArbore(radacina,1,0,latime,inaltime);
+    getch();
+    closegraph();
+    return 0;
+}

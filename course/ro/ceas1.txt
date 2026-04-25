@@ -1,0 +1,22 @@
+#include <iostream>
+#include <chrono>
+#include <ctime>
+#include <winbgim.h>
+using namespace std;
+using namespace chrono;
+
+int main()
+{
+    initwindow(540,450,"Ceas digital");
+    settextstyle(0,0,3);
+    do
+    {
+        auto ora = system_clock::now();
+        time_t ora_t = system_clock::to_time_t(ora);
+        outtextxy(10,200,ctime(&ora_t));
+    }
+    while (!kbhit());
+    getch();
+    closegraph();
+    return 0;
+}

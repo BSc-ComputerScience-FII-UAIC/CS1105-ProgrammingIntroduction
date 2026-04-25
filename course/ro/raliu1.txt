@@ -1,0 +1,67 @@
+#include <winbgim.h>
+#include <graphics.h>
+
+using namespace std;
+
+#define MAX 10
+
+int latime;
+
+struct viteza {
+    unsigned int treapta;
+    unsigned int lin1, col1, lin2, col2;
+    unsigned int culoare;
+    // (lin1,col1) ---> (lin2,col2), treapta=3
+};
+
+viteza vit[MAX];
+
+void deseneazaTabla(int n, int m)
+{
+    rectangle(1,1,getmaxx()-1,getmaxy()-1);
+    for (int i=1; i<n; i++)
+        for (int j=1; j<m; j++)
+            rectangle(latime*j,latime*i,latime*(j+1), latime*(i+1));
+}
+
+void myLine(int x1, int y1, int x2, int y2, int culoare)
+{
+    setcolor(culoare);
+    line(x1*latime,y1*latime,x2*latime,y2*latime);
+    circle(x2*latime,y2*latime,6);
+}
+
+void initViteza(viteza & v, int i)
+{
+    v.treapta=1;
+    v.culoare=i+8;
+    v.lin1=i; v.lin2=i+1; v.col1=1; v.col2=2;
+}
+
+void deseneazaViteza(viteza v)
+{
+    myLine(v.lin1,v.col1,v.lin2,v.col2,v.culoare);
+
+}
+
+int main()
+{
+    int nrLinii,nrColoane;
+    nrLinii=15; nrColoane=25;
+    initwindow(800,600);
+    int latimeOriz=getmaxx()/nrColoane;
+    int latimeVert=getmaxy()/nrLinii;
+    latime=min(latimeOriz,latimeVert);
+//    setcolor(WHITE);
+    deseneazaTabla(nrLinii,nrColoane);
+
+    int nrViteze=5;
+    for (int i=1; i<=5; i++)
+        {
+            initViteza(vit[i],i);
+            deseneazaViteza(vit[i]);
+        }
+    getch();
+    closegraph();
+    return 0;
+}

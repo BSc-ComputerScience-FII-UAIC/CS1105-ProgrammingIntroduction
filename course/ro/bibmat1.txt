@@ -1,0 +1,98 @@
+#include <iostream>
+#include <math.h>
+#include <stdlib.h>
+#include <winbgim.h>
+#include <time.h>
+#include <string>
+
+using namespace std;
+
+#define MAX 20
+#define latura 60
+
+struct matrice
+{
+    int x,y; // coordonate sytanga sus
+    int nrLinii, nrColoane;
+    int elem[MAX][MAX];
+};
+
+void initializeazaMatrice(matrice& M, int nrLin, int nrCol, int xx, int yy, bool aleatoriu)
+{
+    M.nrLinii=nrLin;
+    M.nrColoane=nrCol;
+    M.x=xx;
+    M.y=yy;
+    for (int i=1; i<=M.nrLinii; i++)
+        for (int j=1; j<=M.nrColoane; j++)
+        {
+            M.elem[i][j]=aleatoriu ? rand()%100-rand()%100 : 0;
+        }
+}
+
+void deseneazaMatrice(matrice M, bool aleatoriu)
+{
+    for (int i=1; i<=M.nrLinii; i++)
+        for (int j=1; j<=M.nrColoane; j++)
+        {
+            rectangle(M.x+(j-1)*latura,M.y+(i-1)*latura,M.x+j*latura,M.y+i*latura);
+            if (aleatoriu)
+            {
+                char sir[10];
+                // itoa(M.elem[i][j],sir,10);
+                snprintf(sir, sizeof(sir), "%d", M.elem[i][j]);
+                outtextxy(-5+M.x+(j-1)*latura+latura/2,-5+M.y+(i-1)*latura+latura/2,sir);
+            }
+        }
+}
+
+void aprinde(matrice M, int i, int j, int culoare)
+{
+    char sir[10];
+    snprintf(sir, sizeof(sir), "%d", M.elem[i][j]);
+    // itoa(M.elem[i][j],sir,10);
+    for (int k=1; k<=5; k++)
+    {
+        setcolor(culoare);
+
+        outtextxy(-5+M.x+(j-1)*latura+latura/2,-5+M.y+(i-1)*latura+latura/2,sir);
+        delay(250);
+        setcolor(WHITE);
+        outtextxy(-5+M.x+(j-1)*latura+latura/2,-5+M.y+(i-1)*latura+latura/2,sir);
+        delay(250);
+    }
+}
+
+int main()
+{
+    srand(time(NULL));
+    int numar_linii=2+rand()%5;
+    int numar_coloane=2+rand()%5;
+    initwindow(latura*numar_coloane*3+200,latura*numar_linii+2*latura,"BibMat");
+
+    matrice A;
+    initializeazaMatrice(A, numar_linii, numar_coloane,50,50,true);
+    deseneazaMatrice(A,true);
+    matrice B;
+    initializeazaMatrice(B, numar_linii, numar_coloane,50+A.nrColoane*latura+50,50,true);
+    deseneazaMatrice(B,true);
+    matrice C;
+    initializeazaMatrice(C,numar_linii, numar_coloane, 50+(A.nrColoane+B.nrColoane)*latura+100,50,false);
+    deseneazaMatrice(C,false);
+
+    outtextxy(50+latura*A.nrColoane+25,50+latura*A.nrLinii/2,"+");
+    outtextxy(50+latura*(A.nrColoane+B.nrColoane)+50+25,50+latura*A.nrLinii/2,"=");
+    // ADUNAREA A DOUA MATRICE A si B => rezultatul va fi in C
+    for (int i=1;i<=A.nrLinii;i++)
+        for (int j=1;j<=A.nrColoane;j++)
+            {
+                aprinde(A,i,j,LIGHTRED);
+                aprinde(B,i,j,LIGHTCYAN);
+                C.elem[i][j]=A.elem[i][j]+B.elem[i][j];
+                aprinde(C,i,j,LIGHTGREEN);
+            }
+
+    getch();
+    closegraph();
+    return 0;
+}

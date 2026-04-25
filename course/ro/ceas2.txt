@@ -1,0 +1,42 @@
+#include <math.h>
+#include <winbgim.h>
+
+using namespace std;
+
+const float pi=3.14159265;
+
+int main()
+{
+    initwindow(1000,800,"Ceas");
+    setcolor(WHITE);
+    int xcentru=500, ycentru=400;
+    int xcurent1, ycurent1, xcurent2, ycurent2;
+    int raza1=200, raza2=300;
+    float unghi1, unghi2;
+    for (unghi1=0; unghi1<=2*pi; unghi1+=2*pi/60)  // minutar
+    {
+        xcurent1=xcentru+raza1*cos(unghi1-pi/2);
+        ycurent1=ycentru+raza1*sin(unghi1-pi/2);
+        setlinestyle(0,0,3);
+        setcolor(WHITE);
+        line(xcentru,ycentru,xcurent1,ycurent1);
+        for (unghi2=0; unghi2<=2*pi; unghi2+=2*pi/60)  // secundar
+        {
+            xcurent2=xcentru+raza2*cos(unghi2-pi/2);
+            ycurent2=ycentru+raza2*sin(unghi2-pi/2);
+            setcolor(WHITE);
+            setlinestyle(0,0,1);
+            line(xcentru,ycentru,xcurent2,ycurent2);
+            delay(10); // puneti 1000 ca sa fie o secunda
+            setcolor(BLACK);
+            setlinestyle(0,0,1);
+            line(xcentru,ycentru,xcurent2,ycurent2);
+        }
+        setlinestyle(0,0,3);
+        setcolor(BLACK);
+        line(xcentru,ycentru,xcurent1,ycurent1);
+    }
+    getch();
+    closegraph();
+    return 0;
+}

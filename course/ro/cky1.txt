@@ -1,0 +1,139 @@
+Gramatica
+----------
+Propozitie -> Grup_nominal Grup_verbal
+Grup_nominal -> Determinator Substantiv
+Grup Verbal -> Verb
+Grup Verbal -> Verb Grup_nominal
+
+Lexicul
+-------
+Determinator -> "un"
+Determinator -> "o"
+Determinator -> "orice"
+Substantiv -> "pisica"
+Substantiv -> "caine"
+Substantiv -> "femeie"
+Substantiv -> "barbat"
+Verb -> "iubeste"
+Verb -> "uraste"
+
+"orice pisica uraste un caine" -> este sau nu Propozitie
+
+
+Star(X,Y)={C|(A este în X) si (B este în Y) si C->AB este o regula din gramatica}.
+
+
+sa zicem ca X este: (Determinator,Numeral)
+            Y este (Substantiv, Verb)
+
+Star(X,Y)={C cu proprietatea ca exista o regula C->Determinator Substantiv sau C->Numeral Substantiv sau C->Numeral->Verb sau C->Determinator Verb}
+Star((Determinator,Numeral),(Substantiv,Verb))={Grup_nominal}
+
+struct multime {
+	int nrElem;
+	char elem[200][200];
+};
+
+void Adaugare(multime& M, char x[200])
+{
+   M.nrElem++;
+   strcpy(M.nrElem,x);
+}
+
+struct regula {
+	char stanga[200];
+	char dreapta1[200];
+	char dreapta2[200];
+};
+
+regula Reg[200];
+int nrReg;
+
+// Star(X,Y)={C|(A este în X) si (B este în Y) si C->AB este o regula din gramatica}
+
+multime Star(multime X, multime Y)
+{
+   multime Rezultat;
+   Rezultat.nrElem=0;  // la inceput multimea asta este vida
+   char A[200], B[200], C[200];
+   for (int i=1;i<=X.nrElem;i++)
+	for (int j=1;j<=Y.nrElem;j++)
+	    {
+              	A=X.elem[i]; B=Y.elem[j];
+		for (int k=1;k<=nrReg;k++)
+		  if (!strcmp(Reg[k].dreapta1,A) && !strcmp(Reg[k].dreapta2,B))
+			{
+			   strcpy(C,Reg[k].stanga);
+			   Adaugare(Rezultat,C);
+			}
+	   }
+   return Rezultat;		  
+}
+
+/* Regula nr. k ar fi: 
+Grup_verbal -> Verb Grup_nominal
+   C             A         B
+stanga          dreapta1 dreapta2
+*/
+
+
+// Closure(S) = {A|(A este în S) sau ((B este în Closure(S)) si (A->B este o regula din gramatica))} 
+
+multime Closure(multime S)
+{
+  multime Rezultat;
+  Rezultat.nrElem=0;
+  char A[200], B[200];
+  for (int i=1;i<=S.nrElem;i++)
+     {
+       Adaugare(Rezultat,S.elem[i]);
+     }
+  for (int i=1;i<=Rezultat.nrElem;i++)
+      {
+         strcpy(B,Rezultat.elem[i]);
+         for (k=1;k<=nrReg;k++)
+                if (!strcmp(Reg[k].dreapta1,B) && !strcp(Reg[k].dreapta2,""))
+         	   {
+            		strcpy(A,Reg[k].stanga);	
+			bool gasit=false;
+	                for (j=1;j<=Rezultat.nrElem;j++)
+                            if (!strcmp(A,Rezultat.elem[j]))
+				gasit=true;
+			if (!gasit) Adaugare(Rezultat,A);
+                   }
+     }
+   return Rezultat;
+}
+
+
+// Lookup(k) = {A|A->cuvântul k}
+
+multime Lookup(int k)
+{
+   multime Rezultat; Rezultat.nrElem=0;
+   char cuv[200];
+   strcpy(cuv,cuvinte[k]);  // vectorul cuvinte va fi ceva de genul ("orice","pisica","iubeste...)
+   for (int k=1;k<=nrReg;k++)
+	{
+	  if (!strcmp(Reg[k].dreapta1,cuv) && !strcmp(Reg[k].dreapta2,""))
+		{ strcpy(A,Reg[k].stanga); Adaugare(Rezultat,A); }
+	}
+  return Rezultat;
+}
+
+for (k=1;k<=n;k++)
+{
+ chart[k-1][k]=Closure(Lookup(k));
+ for (i=k-2;i>=0;i--)
+ {
+    chart[i,k]=Ø;
+    for (j=k-1;j>=i+1;j--)
+	{
+          chart[i][k]=Reuniune(chart[i][k], Star(chart[i][j], chart[j][k];
+	  chart[i][k]=Closure(chart[i][k]);
+	}
+ }
+}
+if (Apartine(S,chart[0][n]) cout<<"Accept"; else cout<<"Reject";
+
+
